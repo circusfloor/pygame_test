@@ -32,3 +32,4 @@ while True:
     pygame.draw.rect(screen, color, pos, width)
 
     pygame.display.update()
+    
