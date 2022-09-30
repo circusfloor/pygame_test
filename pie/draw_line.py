@@ -8,6 +8,7 @@ pos_x = 300
 pos_y = 250
 vel_x = 2
 vel_y = 1
+
 while True:
     for event in pygame.event.get():
         if event.type in (QUIT, KEYDOWN):

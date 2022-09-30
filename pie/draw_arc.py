@@ -15,7 +15,7 @@ while True:
 
     # 绘制弧形
     color = 100, 255, 200
-    position = 200, 150, 200, 200
+    position = 300, 150, 200, 200
     start_angle = math.radians(0)
     end_angle = math.radians(180)
     width = 8
