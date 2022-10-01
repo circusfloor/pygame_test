@@ -7,8 +7,9 @@ class Settings:
     def __init__(self):
         self.font1 = pygame.font.Font(None, 30)
         self.font2 = pygame.font.Font(None, 60)
-        self.x = 100
+        self.x = 50
         self.y = 100
+        self.color_1 = 200, 200, 0
 
 
 class Trivia:
@@ -31,7 +32,7 @@ class Trivia:
 
         self.total = len(self.data)
 
-    def print_text(self, font, x, y, text, color=(255, 255, 255)):
+    def print_text(self, font, x, y, text, color=(0, 160, 160)):
         text_ = font.render(text, True, color)
         self.screen.blit(text_, (x, y))
 
@@ -43,6 +44,7 @@ class Trivia:
             self.current += 6
             if self.current >= self.total:
                 self.current = 0
+                self.score = 0
 
     def handle_input(self, number):
         if number == self.correct:
@@ -54,12 +56,16 @@ class Trivia:
     def show_question(self, settings):
         self.correct = int(self.data[self.current + 5])
 
-        if self.scored:
-            self.print_text(settings.font2, 600, 700, 'CORRECT！', (0, 255, 0))
-        elif self.failed:
-            self.print_text(settings.font2, 600, 700, 'INCORRECT！', (255, 0, 0))
+        self.print_text(settings.font1, 1000, 50, 'score: ' + str(self.score), settings.color_1)
 
-        self.print_text(settings.font2, settings.x, settings.y, self.data[self.current].strip())
+        if self.scored:
+            self.print_text(settings.font2, 500, 700, 'CORRECT!', (0, 160, 0))
+            self.print_text(settings.font1, 500, 750, 'press enter for next question', (0, 160, 0))
+        elif self.failed:
+            self.print_text(settings.font2, 500, 700, 'INCORRECT!', (160, 0, 0))
+            self.print_text(settings.font1, 500, 750, 'press enter for next question', (160, 0, 0))
+
+        self.print_text(settings.font2, settings.x, settings.y, self.data[self.current].strip(), settings.color_1)
         self.print_text(settings.font1, settings.x, settings.y + 60 + 1 * 30,
                         '1-' + self.data[self.current + 1].strip())
         self.print_text(settings.font1, settings.x, settings.y + 60 + 2 * 30,
@@ -97,7 +103,7 @@ def run_game():
                 elif event.key == pygame.K_RETURN:
                     trivia.next_question()
 
-        screen.fill((0, 0, 0))
+        screen.fill((255, 255, 255))
         trivia.show_question(settings)
 
         pygame.display.update()
