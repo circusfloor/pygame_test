@@ -29,10 +29,6 @@ while True:
     for event in pygame.event.get():
         if event.type == QUIT:
             sys.exit()
-        elif event.type == KEYDOWN:
-            key_flag = True
-        elif event.type == KEYUP:
-            key_flag = False
 
         keys = pygame.key.get_pressed()
         if keys[K_RETURN]:
