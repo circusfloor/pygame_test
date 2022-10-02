@@ -5,31 +5,74 @@ from pygame.locals import *
 
 
 class Settings:
-    # 属性
+    """游戏属性"""
+
     def __init__(self):
+        # 基础设置
         self.lives = 3
-        self.game_over = True
         self.score = 0
         self.level = 1
         self.color = 200, 200, 200
         self.font1 = pygame.font.Font(None, 40)
         self.font2 = pygame.font.Font(None, 40)
 
+        # 游戏状态
+        self.game_over = True
+
 
 class Circle:
+    """创造球的类"""
+
     def __init__(self, screen):
+        """球的属性"""
         self.pos_x = random.randint(25, 1175)
         self.pos_y = -50
-        self.vel_y = 1
+        self.vel_y = 0.3
         self.color = random.randint(50, 200), random.randint(50, 200), random.randint(50, 200)
         self.screen = screen
         self.total = 0
 
     def update(self):
+        """更新球的位置，向下落"""
         self.pos_y += self.vel_y
 
     def draw_circle(self):
+        """绘制球"""
         pygame.draw.circle(self.screen, circle.color, (self.pos_x, self.pos_y), 50, 0)
+
+
+class Basket:
+    """创建篮筐的类"""
+
+    def __init__(self, screen):
+        """篮筐属性"""
+        self.screen = screen
+
+        # 基本属性
+        self.width = 100
+        self.height = 20
+        self.color = 100, 100, 100
+        self.speed = 1.5
+        # 篮筐的大小和位置
+        self.rect = pygame.Rect(0, 0, self.width, self.height)
+        self.screen_rect = screen.get_rect()
+        self.rect.centerx = self.screen_rect.centerx
+        self.rect.bottom = self.screen_rect.bottom
+        self.center = float(self.rect.centerx)
+        # 移动标志
+        self.moving_right = False
+        self.moving_left = False
+
+    def update(self):
+        """更新篮筐的位置"""
+        if self.moving_right:
+            self.rect.move_ip(self.speed, 0)
+        if self.moving_left:
+            self.rect.move_ip(-self.speed, 0)
+
+    def draw_basket(self):
+        """绘制篮筐"""
+        pygame.draw.rect(self.screen, self.color, self.rect)
 
 
 class Function:
@@ -40,7 +83,7 @@ class Function:
         screen.fill((0, 0, 0))
         return mouse_x, mouse_y, b1
 
-    def event_check(self, settings, circle):
+    def event_check(self, settings, circle, basket):
         for event in pygame.event.get():
             if event.type == QUIT:
                 sys.exit()
@@ -48,10 +91,20 @@ class Function:
                 if event.key == pygame.K_RETURN:
                     if settings.game_over:
                         settings.game_over = False
-                        circle.score = 0
+                        settings.score = 0
                         settings.lives = 3
                         circle.total = 0
                         settings.level = 1
+                        circle.vel_y = 0.3
+                if event.key == pygame.K_LEFT:
+                    basket.moving_left = True
+                if event.key == pygame.K_RIGHT:
+                    basket.moving_right = True
+            elif event.type == KEYUP:
+                if event.key == pygame.K_RIGHT:
+                    basket.moving_right = False
+                elif event.key == pygame.K_LEFT:
+                    basket.moving_left = False
 
     def kill_circle(self, settings, circle):
         mouse_x, mouse_y, b1 = self.get_mouse_pos()
@@ -89,17 +142,19 @@ class Function:
     def update_level(self, circle, settings):
         if circle.total >= 5:
             settings.level = 1 + circle.total // 5
-            circle.vel_y = 0.5 + settings.level * 0.3
+            circle.vel_y = 0.3 + settings.level * 0.1
 
-    def screen_update(self, screen, circle, settings):
+    def screen_update(self, screen, circle, settings, basket):
         screen.fill(settings.color)
         if not settings.game_over:
             circle.update()
             circle.draw_circle()
+        basket.update()
+        basket.draw_basket()
 
         self.print_text(screen, settings)
         self.update_level(circle, settings)
-        pygame.display.flip()
+        pygame.display.update()
 
 
 # 主函数
@@ -107,10 +162,11 @@ pygame.init()
 screen = pygame.display.set_mode((1200, 800))
 settings = Settings()
 circle = Circle(screen)
+basket = Basket(screen)
 pygame.display.set_caption('Bomb Catcher')
 
 while True:
-    Function().event_check(settings, circle)
+    Function().event_check(settings, circle, basket)
     Function().kill_circle(settings, circle)
     Function().game_over_check(settings, circle)
-    Function().screen_update(screen, circle, settings)
+    Function().screen_update(screen, circle, settings, basket)
