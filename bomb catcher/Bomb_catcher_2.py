@@ -15,6 +15,7 @@ class Settings:
         self.color = 200, 200, 200
         self.font1 = pygame.font.Font(None, 40)
         self.font2 = pygame.font.Font(None, 40)
+        self.vel_y = 0.3
 
         # 游戏状态
         self.game_over = True
@@ -27,14 +28,13 @@ class Circle:
         """球的属性"""
         self.pos_x = random.randint(25, 1175)
         self.pos_y = -50
-        self.vel_y = 0.3
         self.color = random.randint(50, 200), random.randint(50, 200), random.randint(50, 200)
         self.screen = screen
         self.total = 0
 
-    def update(self):
+    def update(self, settings):
         """更新球的位置，向下落"""
-        self.pos_y += self.vel_y
+        self.pos_y += settings.vel_y
 
     def draw_circle(self):
         """绘制球"""
@@ -49,16 +49,17 @@ class Basket:
         self.screen = screen
 
         # 基本属性
-        self.width = 100
-        self.height = 20
+        self.width = 200
+        self.height = 30
         self.color = 100, 100, 100
         self.speed = 1.5
+
         # 篮筐的大小和位置
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.screen_rect = screen.get_rect()
-        self.rect.centerx = self.screen_rect.centerx
-        self.rect.bottom = self.screen_rect.bottom
-        self.center = float(self.rect.centerx)
+        self.rect.x = self.screen_rect.centerx
+        self.rect.y = self.screen_rect.bottom - 30
+
         # 移动标志
         self.moving_right = False
         self.moving_left = False
@@ -95,7 +96,7 @@ class Function:
                         settings.lives = 3
                         circle.total = 0
                         settings.level = 1
-                        circle.vel_y = 0.3
+                        settings.vel_y = 0.3
                 if event.key == pygame.K_LEFT:
                     basket.moving_left = True
                 if event.key == pygame.K_RIGHT:
@@ -106,7 +107,7 @@ class Function:
                 elif event.key == pygame.K_LEFT:
                     basket.moving_left = False
 
-    def kill_circle(self, settings, circle):
+    def kill_circle(self, settings, circle, basket):
         mouse_x, mouse_y, b1 = self.get_mouse_pos()
         if circle.pos_x - 25 < mouse_x < circle.pos_x + 25 and \
                 circle.pos_y - 25 < mouse_y < circle.pos_y + 25:
@@ -116,6 +117,12 @@ class Function:
                 circle.pos_x = random.randint(25, 1175)
                 settings.score += 1
                 circle.total += 1
+        if basket.rect.x < circle.pos_x < basket.rect.x + 200 and circle.pos_y > 760:
+            circle.color = random.randint(50, 200), random.randint(50, 200), random.randint(50, 200)
+            circle.pos_y = -50
+            circle.pos_x = random.randint(25, 1175)
+            settings.score += 1
+            circle.total += 1
 
     def print_text(self, screen, settings):
         text1 = settings.font1.render('Score: ' + str(settings.score), True, (255, 128, 0))
@@ -142,12 +149,12 @@ class Function:
     def update_level(self, circle, settings):
         if circle.total >= 5:
             settings.level = 1 + circle.total // 5
-            circle.vel_y = 0.3 + settings.level * 0.1
+            settings.vel_y = 0.3 + settings.level * 0.1
 
     def screen_update(self, screen, circle, settings, basket):
         screen.fill(settings.color)
         if not settings.game_over:
-            circle.update()
+            circle.update(settings)
             circle.draw_circle()
         basket.update()
         basket.draw_basket()
@@ -167,6 +174,6 @@ pygame.display.set_caption('Bomb Catcher')
 
 while True:
     Function().event_check(settings, circle, basket)
-    Function().kill_circle(settings, circle)
+    Function().kill_circle(settings, circle, basket)
     Function().game_over_check(settings, circle)
     Function().screen_update(screen, circle, settings, basket)
