@@ -2,17 +2,17 @@ import pygame
 import sys
 import random
 import math
-from datetime import datetime, date, time
+from datetime import datetime
 from pygame.locals import *
 
 
-def print_text(font, x, y, text, color=(255, 255, 255)):
-    imgtext = font.render(text, True, color)
-    screen.blit(imgtext, (x, y))
+def print_text(font, x_, y_, text, color_=(255, 255, 255)):
+    imgtext = font.render(text, True, color_)
+    screen.blit(imgtext, (x_, y_))
 
 
-def wrap_angle(angle):
-    return angle % 360
+def wrap_angle(angle_):
+    return angle_ % 360
 
 
 pygame.init()
@@ -24,7 +24,7 @@ pos_x = 300
 pos_y = 250
 radius = 200
 angle = 360
-font = pygame.font.Font(None, 36)
+font1 = pygame.font.Font(None, 36)
 
 
 while True:
@@ -53,12 +53,12 @@ while True:
     pos = (int(pos_x + x), int(pos_y + y))
     pygame.draw.circle(screen, color, pos, 10, 0)
 
-    # 绘制1-12数字
+    # 绘制1_12数字
     for n in range(1, 13):
-        angle_n = math.radians( n * (360/12) - 90)
+        angle_n = math.radians(n * (360/12) - 90)
         x = math.cos(angle_n) * (radius-20) - 10
         y = math.sin(angle_n) * (radius-20) - 10
-        print_text(font, pos_x+x, pos_y+y, str(n))
+        print_text(font1, pos_x+x, pos_y+y, str(n))
 
     # 获取当前时间
     today = datetime.today()
@@ -91,6 +91,6 @@ while True:
     pygame.draw.line(screen, color, (pos_x, pos_y), target, 6)
 
     pygame.draw.circle(screen, color, (pos_x, pos_y), 10)
-    print_text(font, 10, 0, str(hours) + ':' + str(minutes) + ':' + str(seconds))
+    print_text(font1, 10, 0, str(hours) + ':' + str(minutes) + ':' + str(seconds))
 
     pygame.display.update()

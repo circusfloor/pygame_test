@@ -5,7 +5,8 @@ from random import randint
 
 
 pygame.init()
-screen = pygame.display.set_mode((600, 500))
+flags = pygame.FULLSCREEN
+screen = pygame.display.set_mode((1920, 1080), flags)
 pygame.display.set_caption('Drawing Arcs')
 pos_x = 300
 pos_y = 150
