@@ -1,6 +1,33 @@
 import pygame, sys, math, random
 from pygame.locals import *
 
+
+class Point:
+    def __init__(self, x, y):
+        self._x = x
+        self._y = y
+
+    def getx(self):
+        return self._x
+
+    def setx(self, x):
+        self._x = x
+
+    x = property(getx, setx)
+
+    def gety(self):
+        return self._y
+
+    def sety(self, y):
+        self._y = y
+
+    y = property(gety, sety)
+
+    def __str__(self):
+        return "{X:" + "{:.0f".format(self._x) +\
+            ",Y:" + ":.0f".format(self._y) + "}"
+
+
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption('Orbit')
